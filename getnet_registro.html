@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Ventas — Getnet Santander</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
+
+  /* TOP BAR */
+  .topbar{background:#CC0000;padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+  .topbar-left{display:flex;align-items:center;gap:12px}
+  .topbar-logo{background:rgba(255,255,255,0.2);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:#fff;letter-spacing:0.5px}
+  .topbar h1{font-size:14px;font-weight:500;color:#fff}
+  .topbar-status{font-size:12px;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:6px}
+  .status-dot{width:7px;height:7px;border-radius:50%;background:#4ade80}
+  .status-dot.disconnected{background:#fbbf24}
+
+  /* LAYOUT */
+  .container{max-width:860px;margin:0 auto;padding:24px 16px}
+
+  /* CONFIG BANNER */
+  .config-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px}
+  .config-banner.hidden{display:none}
+  .config-banner-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+  .config-banner p{font-size:13px;color:#856404;line-height:1.5}
+  .config-banner strong{font-weight:600}
+  .url-input-row{display:flex;gap:8px;margin-top:8px}
+  .url-input-row input{flex:1;font-size:13px;padding:7px 10px;border:1px solid #ffc107;border-radius:7px;background:#fffbf0;outline:none}
+  .url-input-row input:focus{border-color:#CC0000}
+  .btn-connect{font-size:13px;padding:7px 16px;background:#CC0000;color:#fff;border:none;border-radius:7px;cursor:pointer;font-weight:500;white-space:nowrap}
+  .btn-connect:hover{background:#aa0000}
+
+  /* SECTION */
+  .section{background:#fff;border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;margin-bottom:14px}
+  .section-title{background:#fafafa;padding:10px 18px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid #e5e5e5}
+  .section-body{padding:18px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field.full{grid-column:1/-1}
+  .field label{font-size:12px;color:#666;font-weight:500}
+  .field input,.field select,.field textarea{font-size:13px;color:#1a1a1a;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 11px;outline:none;transition:border 0.15s;font-family:inherit}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:#CC0000;box-shadow:0 0 0 3px rgba(204,0,0,0.08)}
+  .field textarea{resize:vertical;min-height:60px}
+  .field input.required-empty{border-color:#f87171}
+
+  /* RADIO / CHECKBOX */
+  .radio-group,.checkbox-group{display:flex;gap:12px;flex-wrap:wrap;padding-top:2px}
+  .radio-group label,.checkbox-group label{display:flex;align-items:center;gap:6px;font-size:13px;color:#333;cursor:pointer}
+  .radio-group input,.checkbox-group input{accent-color:#CC0000;width:14px;height:14px}
+
+  /* ACTIONS */
+  .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+  .btn-secondary{font-size:13px;padding:9px 20px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#555;cursor:pointer;font-weight:500}
+  .btn-secondary:hover{background:#f5f5f5}
+  .btn-primary{font-size:13px;padding:9px 24px;border-radius:8px;border:none;background:#CC0000;color:#fff;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:8px;transition:background 0.15s}
+  .btn-primary:hover{background:#aa0000}
+  .btn-primary:disabled{background:#e5a0a0;cursor:not-allowed}
+  .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;display:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:200;display:none;animation:fadeup 0.25s ease}
+  .toast.success{background:#16a34a;color:#fff}
+  .toast.error{background:#dc2626;color:#fff}
+  @keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* RECORDS */
+  .records-section{margin-top:24px}
+  .records-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .records-header h2{font-size:15px;font-weight:600;color:#1a1a1a}
+  .badge{font-size:11px;padding:3px 10px;border-radius:20px;background:#f5f5f5;color:#888;border:1px solid #e5e5e5}
+  .record-card{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:13px 16px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;transition:border 0.15s}
+  .record-card:hover{border-color:#CC0000}
+  .record-name{font-size:13px;font-weight:600;color:#1a1a1a}
+  .record-meta{font-size:12px;color:#777;margin-top:3px}
+  .record-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .pill{font-size:11px;padding:2px 8px;border-radius:20px;background:#f5f5f5;color:#555}
+  .record-date{font-size:11px;color:#aaa;text-align:right}
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;margin-right:3px}
+  .sync-dot.pending{background:#fbbf24}
+  .empty-state{text-align:center;padding:32px 16px;color:#aaa;font-size:13px}
+
+  @media(max-width:600px){
+    .grid-2,.grid-3{grid-template-columns:1fr}
+    .field.full{grid-column:1}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">GETNET</div>
+    <h1>Registro de Ventas</h1>
+  </div>
+  <div class="topbar-status">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Cargando...</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Banner configuración URL -->
+  <div class="config-banner" id="config-banner">
+    <div class="config-banner-icon">⚙️</div>
+    <div style="flex:1">
+      <p><strong>Conecta con tu Google Sheet.</strong> Pega aquí la URL de tu Google Apps Script Web App para que los registros se guarden directamente en tu planilla.</p>
+      <div class="url-input-row">
+        <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/XXXXXXX/exec">
+        <button class="btn-connect" onclick="guardarURL()">Conectar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="section">
+    <div class="section-title">Persona de contacto</div>
+    <div class="section-body">
+      <div class="grid-3">
+        <div class="field">
+          <label>RUT contacto *</label>
+          <input type="text" id="rut-contacto" placeholder="12345678-9">
+        </div>
+        <div class="field">
+          <label>Nombres *</label>
+          <input type="text" id="nombres" placeholder="Ej: María Josefa">
+        </div>
+        <div class="field">
+          <label>Apellido paterno</label>
+          <input type="text" id="ap-paterno">
+        </div>
+        <div class="field">
+          <label>Apellido materno</label>
+          <input type="text" id="ap-materno">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Datos comerciales</div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="field">
+          <label>RUT contratación</label>
+          <input type="text" id="rut-cont" placeholder="12.345.678-9">
+        </div>
+        <div class="field">
+          <label>Nombre fantasía / cliente</label>
+          <input type="text" id="nombre-negocio">
+        </div>
+        <div class="field">
+          <label>Fecha de nacimiento</label>
+          <input type="date" id="fecha-nac">
+        </div>
+        <div class="field">
+          <label>Código actividad SII</label>
+          <input type="text" id="cod-sii" placeholder="Ej: 801003">
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <input type="tel" id="telefono" placeholder="56912345678">
+        </div>
+        <div class="field">
+          <label>Correo electrónico</label>
+          <input type="email" id="email" placeholder="correo@dominio.com">
+        </div>
+      </div>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:12px">
+        <div class="field">
+          <label>Tipo de sociedad</label>
+          <div class="radio-group">
+            <label><input type="radio" name="sociedad" value="Natural"> P. Natural</label>
+            <label><input type="radio" name="sociedad" value="SPA"> SPA</label>
+            <label><input type="radio" name="sociedad" value="EIRL"> EIRL</label>
+            <label><input type="radio" name="sociedad" value="Ltda"> Ltda.</label>
+            <label><input type="radio" name="sociedad" value="Otra"> Otra</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Nacionalidad</label>
+          <div class="radio-group">
+            <label><input type="radio" name="nac" value="Chilena" checked> Chilena</label>
+            <label><input type="radio" name="nac" value="Extranjera"> Extranjera</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Dirección</div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="field full">
+          <label>Calle / Avenida / Pasaje</label>
+          <input type="text" id="calle">
+        </div>
+        <div class="field">
+          <label>Número</label>
+          <input type="text" id="num-calle">
+        </div>
+        <div class="field">
+          <label>Depto / Oficina / Local</label>
+          <input type="text" id="depto">
+        </div>
+        <div class="field">
+          <label>Región</label>
+          <select id="region">
+            <option value="">Seleccionar...</option>
+            <option>Arica y Parinacota</option><option>Tarapacá</option><option>Antofagasta</option>
+            <option>Atacama</option><option>Coquimbo</option><option>Valparaíso</option>
+            <option>Metropolitana</option><option>O'Higgins</option><option>Maule</option>
+            <option>Ñuble</option><option>Biobío</option><option>La Araucanía</option>
+            <option>Los Ríos</option><option>Los Lagos</option><option>Aysén</option>
+            <option>Magallanes</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Comuna</label>
+          <input type="text" id="comuna">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Configuración del POS</div>
+    <div class="section-body">
+      <div class="grid-2" style="margin-bottom:14px">
+        <div class="field">
+          <label>Depósitos al día (1 a 5)</label>
+          <select id="depositos">
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cantidad POS</label>
+          <input type="number" id="cant-pos" value="1" min="1" max="99">
+        </div>
+      </div>
+      <div class="field">
+        <label>Opciones de instalación</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="propina"> Propina en POS</label>
+          <label><input type="checkbox" id="con-tecnico"> Con técnico</label>
+          <label><input type="checkbox" id="sin-tecnico"> Sin técnico</label>
+          <label><input type="checkbox" id="entrega-inm"> Entrega inmediata</label>
+          <label><input type="checkbox" id="boleta-elect"> Boleta electrónica</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Cuenta de abono</div>
+    <div class="section-body">
+      <div class="grid-3">
+        <div class="field">
+          <label>Banco</label>
+          <select id="banco">
+            <option value="">Seleccionar...</option>
+            <option>Santander</option><option>Banco de Chile</option><option>BCI</option>
+            <option>Scotiabank</option><option>Itaú</option><option>BICE</option>
+            <option>Estado</option><option>Coopeuch</option><option>Falabella</option>
+            <option>Mercado Pago</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tipo de cuenta</label>
+          <select id="tipo-cuenta">
+            <option value="">Seleccionar...</option>
+            <option>Cuenta corriente</option><option>Cuenta vista</option>
+            <option>Cuenta RUT</option><option>Cuenta ahorro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>N° de cuenta</label>
+          <input type="text" id="num-cuenta">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Ejecutivo y cierre</div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="field">
+          <label>Ejecutivo que vendió</label>
+          <input type="text" id="ejecutivo">
+        </div>
+        <div class="field">
+          <label>Fecha de venta</label>
+          <input type="date" id="fecha-venta">
+        </div>
+        <div class="field full">
+          <label>Observaciones</label>
+          <textarea id="obs" placeholder="Notas adicionales, acuerdos, pendientes..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-secondary" onclick="resetForm()">Limpiar formulario</button>
+    <button class="btn-primary" id="btn-guardar" onclick="guardarVenta()">
+      <span class="spinner" id="spinner"></span>
+      <span id="btn-text">Guardar en Google Sheets</span>
+    </button>
+  </div>
+
+  <!-- REGISTROS LOCALES -->
+  <div class="records-section">
+    <div class="records-header">
+      <h2>Ventas registradas</h2>
+      <span class="badge" id="count-badge">0 registros</span>
+    </div>
+    <div id="records-list">
+      <div class="empty-state">Aún no hay ventas registradas en esta sesión.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────
+const STORAGE_KEY = 'getnet_ventas_v2';
+const URL_KEY = 'getnet_script_url';
+
+let ventas = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let scriptURL = localStorage.getItem(URL_KEY) || '';
+
+// ─── INIT ─────────────────────────────────────────────────
+window.onload = function() {
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha-venta').value = hoy;
+  actualizarEstado();
+  renderRecords();
+};
+
+function actualizarEstado() {
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  const banner = document.getElementById('config-banner');
+  if (scriptURL) {
+    dot.classList.remove('disconnected');
+    txt.textContent = 'Conectado a Google Sheets';
+    banner.classList.add('hidden');
+  } else {
+    dot.classList.add('disconnected');
+    txt.textContent = 'Sin conectar a Google Sheets';
+    banner.classList.remove('hidden');
+  }
+}
+
+function guardarURL() {
+  const val = document.getElementById('script-url-input').value.trim();
+  if (!val.startsWith('https://script.google.com')) {
+    showToast('URL inválida. Debe empezar con https://script.google.com', 'error');
+    return;
+  }
+  scriptURL = val;
+  localStorage.setItem(URL_KEY, scriptURL);
+  actualizarEstado();
+  showToast('¡Conectado correctamente!', 'success');
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function g(id) { return document.getElementById(id); }
+function gv(id) { return g(id).value.trim(); }
+function gc(id) { return g(id).checked; }
+function radio(name) {
+  const r = document.querySelector('input[name="' + name + '"]:checked');
+  return r ? r.value : '';
+}
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+
+// ─── GUARDAR VENTA ────────────────────────────────────────
+async function guardarVenta() {
+  const rutContacto = gv('rut-contacto');
+  const nombres = gv('nombres');
+
+  if (!rutContacto || !nombres) {
+    g('rut-contacto').classList.add('required-empty');
+    g('nombres').classList.add('required-empty');
+    showToast('RUT contacto y Nombres son requeridos', 'error');
+    return;
+  }
+  g('rut-contacto').classList.remove('required-empty');
+  g('nombres').classList.remove('required-empty');
+
+  const venta = {
+    id: Date.now(),
+    fecha: gv('fecha-venta') || todayISO(),
+    rutContacto,
+    nombres,
+    apPaterno: gv('ap-paterno'),
+    apMaterno: gv('ap-materno'),
+    rutCont: gv('rut-cont'),
+    nombreNegocio: gv('nombre-negocio'),
+    fechaNac: gv('fecha-nac'),
+    codSII: gv('cod-sii'),
+    telefono: gv('telefono'),
+    email: gv('email'),
+    sociedad: radio('sociedad'),
+    nacionalidad: radio('nac'),
+    calle: gv('calle'),
+    numCalle: gv('num-calle'),
+    depto: gv('depto'),
+    region: gv('region'),
+    comuna: gv('comuna'),
+    depositos: gv('depositos'),
+    cantPos: gv('cant-pos'),
+    propina: gc('propina'),
+    conTecnico: gc('con-tecnico'),
+    sinTecnico: gc('sin-tecnico'),
+    entregaInm: gc('entrega-inm'),
+    boletaElect: gc('boleta-elect'),
+    banco: gv('banco'),
+    tipoCuenta: gv('tipo-cuenta'),
+    numCuenta: gv('num-cuenta'),
+    ejecutivo: gv('ejecutivo'),
+    obs: gv('obs'),
+    synced: false
+  };
+
+  // Loading state
+  g('btn-guardar').disabled = true;
+  g('spinner').style.display = 'block';
+  g('btn-text').textContent = 'Guardando...';
+
+  // Intentar enviar a Google Sheets
+  if (scriptURL) {
+    try {
+      const resp = await fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(venta)
+      });
+      const result = await resp.json();
+      if (result.status === 'ok') {
+        venta.synced = true;
+        showToast('✓ Guardado en Google Sheets', 'success');
+      } else {
+        showToast('Error en Sheets: ' + result.message, 'error');
+      }
+    } catch (err) {
+      showToast('Error de conexión. Guardado solo localmente.', 'error');
+    }
+  } else {
+    showToast('Guardado localmente (sin Google Sheets)', 'success');
+  }
+
+  // Guardar local siempre
+  ventas.unshift(venta);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ventas));
+  renderRecords();
+  resetForm();
+
+  // Restaurar botón
+  g('btn-guardar').disabled = false;
+  g('spinner').style.display = 'none';
+  g('btn-text').textContent = 'Guardar en Google Sheets';
+}
+
+// ─── RESET ────────────────────────────────────────────────
+function resetForm() {
+  ['rut-contacto','nombres','ap-paterno','ap-materno','rut-cont','nombre-negocio',
+   'fecha-nac','cod-sii','telefono','email','calle','num-calle','depto','comuna',
+   'num-cuenta','ejecutivo','obs'].forEach(id => { g(id).value = ''; });
+  g('depositos').value = '1';
+  g('cant-pos').value = '1';
+  g('region').value = '';
+  g('banco').value = '';
+  g('tipo-cuenta').value = '';
+  ['propina','con-tecnico','sin-tecnico','entrega-inm','boleta-elect'].forEach(id => { g(id).checked = false; });
+  const nacChilena = document.querySelector('input[name="nac"][value="Chilena"]');
+  if (nacChilena) nacChilena.checked = true;
+  document.querySelectorAll('input[name="sociedad"]').forEach(r => r.checked = false);
+  g('fecha-venta').value = todayISO();
+}
+
+// ─── RENDER RECORDS ───────────────────────────────────────
+function renderRecords() {
+  const list = g('records-list');
+  g('count-badge').textContent = ventas.length + ' registro' + (ventas.length !== 1 ? 's' : '');
+  if (ventas.length === 0) {
+    list.innerHTML = '<div class="empty-state">Aún no hay ventas registradas.</div>';
+    return;
+  }
+  list.innerHTML = ventas.map(v => `
+    <div class="record-card">
+      <div>
+        <div class="record-name">${v.nombres} ${v.apPaterno} ${v.apMaterno}</div>
+        <div class="record-meta">${v.nombreNegocio || '—'} · RUT ${v.rutContacto} · ${v.telefono || 'sin teléfono'}</div>
+        <div class="record-meta">${v.region ? v.region + (v.comuna ? ', ' + v.comuna : '') : ''} · ${v.cantPos} POS · Ejec: ${v.ejecutivo || '—'}</div>
+        <div class="record-pills">
+          ${v.propina ? '<span class="pill">Propina</span>' : ''}
+          ${v.conTecnico ? '<span class="pill">Con técnico</span>' : ''}
+          ${v.sinTecnico ? '<span class="pill">Sin técnico</span>' : ''}
+          ${v.entregaInm ? '<span class="pill">Entrega inmediata</span>' : ''}
+          ${v.boletaElect ? '<span class="pill">Boleta electrónica</span>' : ''}
+        </div>
+      </div>
+      <div>
+        <div class="record-date">${v.fecha}</div>
+        <div style="text-align:right;margin-top:6px;font-size:11px">
+          <span class="sync-dot ${v.synced ? '' : 'pending'}"></span>
+          <span style="color:#aaa">${v.synced ? 'Sincronizado' : 'Local'}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── TOAST ────────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = g('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.style.display = 'block';
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
