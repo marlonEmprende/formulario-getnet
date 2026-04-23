@@ -1,7 +1,3 @@
-
-cat > .github/workflows/deploy.yml << 'EOF'
-name: Desplegar en GitHub Pages
-
 on:
   push:
     branches:
