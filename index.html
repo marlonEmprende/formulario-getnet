@@ -539,9 +539,12 @@
 const STORAGE_KEY = 'getnet_ventas_v3';
 const URL_KEY = 'getnet_script_url';
 const USER_KEY = 'getnet_user_v1';
+// URL del Apps Script — viene fija acá para que la app se conecte sola en cualquier
+// dispositivo, sin que cada ejecutiva tenga que pegarla a mano.
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxoShg_Xik9kNqD--m31uWt-OQsLsnr5BvKPzULXcKURY4zzlB8cJYsAMgPOXqlTOxMPw/exec';
 
 let ventas = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-let scriptURL = localStorage.getItem(URL_KEY) || '';
+let scriptURL = localStorage.getItem(URL_KEY) || DEFAULT_SCRIPT_URL;
 let currentUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
 let giroSeleccionado = null;
 let editingId = null;
@@ -763,6 +766,7 @@ function guardarURL() {
   localStorage.setItem(URL_KEY, scriptURL);
   actualizarEstado();
   showToast('¡Conectado correctamente!', 'success');
+  cargarVentasDesdeSheet();
 }
 
 // ─── VALIDACIÓN DE RUT CHILENO (módulo 11) ───────────────
@@ -1283,7 +1287,13 @@ function renderRecords() {
   }
   g('count-badge').textContent = visibles.length + ' registro' + (visibles.length !== 1 ? 's' : '');
   if (visibles.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No se encontraron ventas.</td></tr>';
+    let msg = 'No se encontraron ventas.';
+    if (!scriptURL) {
+      msg = '⚠️ No estás conectado a Google Sheets — pega la URL en el banner amarillo de arriba para ver tus clientes.';
+    } else if (ventas.length === 0) {
+      msg = 'Aún no hay ventas cargadas. Prueba apretar 🔄 Actualizar.';
+    }
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">' + msg + '</td></tr>';
     return;
   }
   const esAdmin = currentUser && currentUser.rol === 'Admin';
