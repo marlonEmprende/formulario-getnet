@@ -159,6 +159,9 @@
   .chk-mini{font-size:11px;color:#666;white-space:nowrap}
   .btn-edit{font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #CC0000;background:#fff;color:#CC0000;cursor:pointer;font-weight:600;white-space:nowrap}
   .btn-edit:hover{background:#fff0f0}
+  .btn-delete{font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid #999;background:#fff;color:#666;cursor:pointer;font-weight:600;white-space:nowrap}
+  .btn-delete:hover{background:#f5f5f5;border-color:#dc2626;color:#dc2626}
+  .action-row{display:flex;gap:6px;flex-wrap:wrap}
   .locked-note{font-size:10px;color:#aaa;white-space:nowrap}
   .edit-banner{background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:10px 16px;margin-bottom:14px;display:none;align-items:center;justify-content:space-between;font-size:13px;color:#92400e}
   .edit-banner.show{display:flex}
@@ -1015,7 +1018,7 @@ async function guardarVenta() {
 
   const esEdicion = !!editingId;
   if (esEdicion) {
-    const original = ventas.find(v => v.id === editingId);
+    const original = ventas.find(v => String(v.id) === String(editingId));
     if (original) {
       venta.validado = original.validado;
       venta.validadoPor = original.validadoPor;
@@ -1052,7 +1055,7 @@ async function guardarVenta() {
 
   // Guardar local
   if (esEdicion) {
-    const idx = ventas.findIndex(v => v.id === editingId);
+    const idx = ventas.findIndex(v => String(v.id) === String(editingId));
     if (idx !== -1) ventas[idx] = venta; else ventas.unshift(venta);
   } else {
     ventas.unshift(venta);
@@ -1070,7 +1073,7 @@ async function guardarVenta() {
 
 // ─── EDICIÓN DE VENTA EXISTENTE ───────────────────────────
 function startEdit(id) {
-  const venta = ventas.find(v => v.id === id);
+  const venta = ventas.find(v => String(v.id) === String(id));
   if (!venta) return;
   editingId = id;
   g('rut-contacto').value = venta.rutContacto || '';
@@ -1132,7 +1135,7 @@ function cancelarEdicion() {
 
 // ─── VALIDACIÓN ADMIN ─────────────────────────────────────
 async function toggleValidacion(id) {
-  const venta = ventas.find(v => v.id === id);
+  const venta = ventas.find(v => String(v.id) === String(id));
   if (!venta) return;
   venta.validado = !venta.validado;
   venta.validadoPor = venta.validado ? (currentUser ? currentUser.nombre : '') : '';
@@ -1146,6 +1149,39 @@ async function toggleValidacion(id) {
       });
     } catch (err) { /* se queda validado localmente aunque falle el envío */ }
   }
+}
+
+// ─── ELIMINAR VENTA ────────────────────────────────────────
+async function eliminarVenta(id) {
+  const venta = ventas.find(v => String(v.id) === String(id));
+  if (!venta) { showToast('No se encontró la venta a eliminar', 'error'); return; }
+  const nombreCompleto = (venta.nombres || '') + ' ' + (venta.apPaterno || '');
+  if (!confirm('¿Eliminar la venta de ' + nombreCompleto.trim() + '? Esta acción no se puede deshacer.')) return;
+
+  ventas = ventas.filter(v => String(v.id) !== String(id));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ventas));
+  renderRecords();
+  actualizarSelectorMeses();
+
+  if (scriptURL) {
+    try {
+      const resp = await fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'eliminar', id: venta.id })
+      });
+      const result = await resp.json();
+      if (result.status === 'ok') {
+        showToast('✓ Venta eliminada', 'success');
+      } else {
+        showToast('Eliminada localmente, pero no en Sheets: ' + result.message, 'error');
+      }
+    } catch (err) {
+      showToast('Eliminada localmente. No se pudo eliminar en Google Sheets.', 'error');
+    }
+  } else {
+    showToast('Venta eliminada localmente', 'success');
+  }
+  if (editingId !== null && String(editingId) === String(id)) cancelarEdicion();
 }
 
 // ─── RESET ────────────────────────────────────────────────
@@ -1267,8 +1303,11 @@ function renderRecords() {
       <td><span class="chk-mini">${hechosChk}/${totalChk}</span></td>
       <td>${v.validado ? '<span class="estado-pill validado">✓ Validado</span><div class="cell-sub">'+(v.validadoPor||'')+'</div>' : '<span class="estado-pill pendiente">Pendiente</span>'}</td>
       <td>
-        ${puedeEditar ? '<button class="btn-edit" onclick="startEdit('+v.id+')">Editar</button>' : '<span class="locked-note">🔒 Validada</span>'}
-        ${esAdmin ? '<br><button class="btn-validar '+(v.validado?'is-validado':'')+'" style="margin-top:6px" onclick="toggleValidacion('+v.id+')">'+(v.validado?'Quitar validación':'Validar')+'</button>' : ''}
+        <div class="action-row">
+          ${puedeEditar ? '<button class="btn-edit" onclick="startEdit(\''+v.id+'\')">Editar</button>' : '<span class="locked-note">🔒 Validada</span>'}
+          ${puedeEditar ? '<button class="btn-delete" onclick="eliminarVenta(\''+v.id+'\')">Eliminar</button>' : ''}
+        </div>
+        ${esAdmin ? '<button class="btn-validar '+(v.validado?'is-validado':'')+'" style="margin-top:6px" onclick="toggleValidacion(\''+v.id+'\')">'+(v.validado?'Quitar validación':'Validar')+'</button>' : ''}
       </td>
     </tr>`;
   }).join('');
