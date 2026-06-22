@@ -137,6 +137,14 @@
   .records-search input{width:100%;font-size:13px;padding:9px 14px 9px 34px;border:1px solid #ddd;border-radius:8px;outline:none;font-family:inherit}
   .records-search input:focus{border-color:#CC0000}
   .records-search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:#aaa}
+  .records-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:stretch}
+  .records-toolbar .records-search{flex:1;margin-bottom:0;min-width:180px}
+  .mes-select{font-size:13px;padding:9px 11px;border:1px solid #ddd;border-radius:8px;outline:none;font-family:inherit;background:#fff;min-width:150px}
+  .mes-select:focus{border-color:#CC0000}
+  .btn-refresh{font-size:13px;padding:9px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#555;cursor:pointer;font-weight:500;white-space:nowrap}
+  .btn-refresh:hover{background:#f5f5f5}
+  .btn-refresh.loading{opacity:0.6;cursor:wait}
+  .sync-info{font-size:11px;color:#999;margin-bottom:10px}
   .table-wrap{background:#fff;border:1px solid #e5e5e5;border-radius:12px;overflow-x:auto}
   table.clients-table{width:100%;border-collapse:collapse;font-size:12px;min-width:760px}
   table.clients-table thead th{background:#fafafa;text-align:left;padding:9px 12px;font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid #e5e5e5;white-space:nowrap;position:sticky;top:0}
@@ -488,10 +496,15 @@
       <h2>Mis clientes</h2>
       <span class="badge" id="count-badge">0 registros</span>
     </div>
-    <div class="records-search">
-      <span class="records-search-icon">🔎</span>
-      <input type="text" id="records-search-input" placeholder="Buscar por nombre, RUT o negocio...">
+    <div class="records-toolbar">
+      <div class="records-search">
+        <span class="records-search-icon">🔎</span>
+        <input type="text" id="records-search-input" placeholder="Buscar por nombre, RUT o negocio...">
+      </div>
+      <select class="mes-select" id="filtro-mes"></select>
+      <button class="btn-refresh" id="btn-refresh" onclick="cargarVentasDesdeSheet()">🔄 Actualizar</button>
     </div>
+    <div class="sync-info" id="sync-info"></div>
     <div class="table-wrap">
       <table class="clients-table">
         <thead>
@@ -530,6 +543,8 @@ let currentUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
 let giroSeleccionado = null;
 let editingId = null;
 let searchQuery = '';
+let filtroMes = '';
+const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 // ─── LISTADO DE GIROS SII (ACTECO) ───────────────────────
 // Curado desde la tabla oficial del SII. Ampliable: ver nota al final del archivo.
@@ -698,6 +713,7 @@ function aplicarSesion() {
     g('ejecutivo').classList.remove('ejecutivo-locked');
   }
   renderRecords();
+  cargarVentasDesdeSheet();
 }
 
 // ─── INIT ─────────────────────────────────────────────────
@@ -708,8 +724,13 @@ window.onload = function() {
   aplicarSesion();
   renderRecords();
   actualizarChecklistBadge();
+  actualizarSelectorMeses();
   g('records-search-input').addEventListener('input', function(){
     searchQuery = stripAccents(this.value.trim().toLowerCase());
+    renderRecords();
+  });
+  g('filtro-mes').addEventListener('change', function(){
+    filtroMes = this.value;
     renderRecords();
   });
 };
@@ -1037,6 +1058,7 @@ async function guardarVenta() {
     ventas.unshift(venta);
   }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ventas));
+  actualizarSelectorMeses();
   renderRecords();
   cancelarEdicion(); // limpia editingId y resetea el formulario
 
@@ -1156,12 +1178,66 @@ function resetForm() {
   g('btn-text').textContent = 'Guardar en Google Sheets';
 }
 
+// ─── SELECTOR DE MES ──────────────────────────────────────
+function mesLabel(yyyymm) {
+  const partes = yyyymm.split('-');
+  const y = partes[0], m = partes[1];
+  const idx = parseInt(m, 10) - 1;
+  return (MESES_ES[idx] || m) + ' ' + y;
+}
+function actualizarSelectorMeses() {
+  const select = g('filtro-mes');
+  const mesesSet = new Set(ventas.map(v => (v.fecha || '').slice(0, 7)).filter(Boolean));
+  mesesSet.add(todayISO().slice(0, 7)); // siempre incluir el mes actual
+  const meses = Array.from(mesesSet).sort().reverse();
+  const valorActual = select.value;
+  select.innerHTML = '<option value="">Todos los meses</option>' +
+    meses.map(m => '<option value="' + m + '">' + mesLabel(m) + '</option>').join('');
+  if (meses.indexOf(valorActual) !== -1) select.value = valorActual;
+}
+
+// ─── CARGA DE VENTAS DESDE GOOGLE SHEETS ──────────────────
+async function cargarVentasDesdeSheet() {
+  if (!scriptURL || !currentUser) return;
+  const btn = g('btn-refresh');
+  const info = g('sync-info');
+  btn.classList.add('loading');
+  btn.textContent = '🔄 Cargando...';
+  try {
+    let url = scriptURL + (scriptURL.indexOf('?') === -1 ? '?' : '&') + 'action=listar';
+    if (currentUser.rol === 'Ejecutivo Comercial') {
+      url += '&ejecutivo=' + encodeURIComponent(currentUser.nombre);
+    }
+    const resp = await fetch(url);
+    const result = await resp.json();
+    if (result.status === 'ok' && Array.isArray(result.ventas)) {
+      const serverIds = new Set(result.ventas.map(v => String(v.id)));
+      const pendientesLocales = ventas.filter(v => !v.synced && !serverIds.has(String(v.id)));
+      ventas = result.ventas.concat(pendientesLocales);
+      ventas.sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || '')) || (Number(b.id) - Number(a.id)));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ventas));
+      actualizarSelectorMeses();
+      renderRecords();
+      info.textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CL');
+    } else {
+      info.textContent = 'No se pudo actualizar desde Google Sheets. Mostrando datos locales.';
+    }
+  } catch (err) {
+    info.textContent = 'Sin conexión con Google Sheets. Mostrando datos locales.';
+  }
+  btn.classList.remove('loading');
+  btn.textContent = '🔄 Actualizar';
+}
+
 // ─── RENDER RECORDS (TABLA) ───────────────────────────────
 function renderRecords() {
   const tbody = g('records-tbody');
   let visibles = ventas;
   if (currentUser && currentUser.rol === 'Ejecutivo Comercial') {
     visibles = ventas.filter(v => v.ejecutivo === currentUser.nombre);
+  }
+  if (filtroMes) {
+    visibles = visibles.filter(v => (v.fecha || '').slice(0, 7) === filtroMes);
   }
   if (searchQuery) {
     visibles = visibles.filter(v => {
