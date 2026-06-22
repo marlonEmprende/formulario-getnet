@@ -13,12 +13,29 @@
   .topbar-left{display:flex;align-items:center;gap:12px}
   .topbar-logo{background:rgba(255,255,255,0.2);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:#fff;letter-spacing:0.5px}
   .topbar h1{font-size:14px;font-weight:500;color:#fff}
-  .topbar-status{font-size:12px;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:6px}
+  .topbar-status{font-size:12px;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:14px}
   .status-dot{width:7px;height:7px;border-radius:50%;background:#4ade80}
   .status-dot.disconnected{background:#fbbf24}
+  .topbar-user{display:flex;align-items:center;gap:8px;font-size:12px;color:#fff}
+  .topbar-user .role-badge{background:rgba(255,255,255,0.22);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;letter-spacing:0.3px}
+  .topbar-user button{background:none;border:none;color:rgba(255,255,255,0.8);font-size:11px;text-decoration:underline;cursor:pointer;padding:0}
 
   /* LAYOUT */
   .container{max-width:860px;margin:0 auto;padding:24px 16px}
+
+  /* LOGIN OVERLAY */
+  .login-overlay{position:fixed;inset:0;background:rgba(20,20,20,0.55);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px}
+  .login-overlay.hidden{display:none}
+  .login-card{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,0.25)}
+  .login-card h2{font-size:17px;margin-bottom:4px}
+  .login-card p{font-size:13px;color:#777;margin-bottom:18px}
+  .login-field{margin-bottom:14px;display:flex;flex-direction:column;gap:6px}
+  .login-field label{font-size:12px;font-weight:600;color:#555}
+  .login-field select,.login-field input{font-size:13px;padding:9px 11px;border:1px solid #ddd;border-radius:8px;outline:none;font-family:inherit}
+  .login-field select:focus,.login-field input:focus{border-color:#CC0000}
+  .btn-login{width:100%;margin-top:6px;font-size:13px;padding:11px;border-radius:8px;border:none;background:#CC0000;color:#fff;font-weight:600;cursor:pointer}
+  .btn-login:hover{background:#aa0000}
+  .btn-login:disabled{background:#e5a0a0;cursor:not-allowed}
 
   /* CONFIG BANNER */
   .config-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px}
@@ -34,22 +51,50 @@
 
   /* SECTION */
   .section{background:#fff;border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;margin-bottom:14px}
-  .section-title{background:#fafafa;padding:10px 18px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid #e5e5e5}
+  .section-title{background:#fafafa;padding:10px 18px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid #e5e5e5;display:flex;align-items:center;justify-content:space-between}
   .section-body{padding:18px}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-  .field{display:flex;flex-direction:column;gap:5px}
+  .field{display:flex;flex-direction:column;gap:5px;position:relative}
   .field.full{grid-column:1/-1}
   .field label{font-size:12px;color:#666;font-weight:500}
   .field input,.field select,.field textarea{font-size:13px;color:#1a1a1a;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 11px;outline:none;transition:border 0.15s;font-family:inherit}
   .field input:focus,.field select:focus,.field textarea:focus{border-color:#CC0000;box-shadow:0 0 0 3px rgba(204,0,0,0.08)}
   .field textarea{resize:vertical;min-height:60px}
-  .field input.required-empty{border-color:#f87171}
+  .field input.required-empty,.field select.required-empty{border-color:#f87171;background:#fff5f5}
+  .field-error{font-size:11px;color:#dc2626;margin-top:2px;display:none}
+  .field-error.show{display:block}
+  .field input.valid-ok{border-color:#86efac}
 
   /* RADIO / CHECKBOX */
   .radio-group,.checkbox-group{display:flex;gap:12px;flex-wrap:wrap;padding-top:2px}
   .radio-group label,.checkbox-group label{display:flex;align-items:center;gap:6px;font-size:13px;color:#333;cursor:pointer}
   .radio-group input,.checkbox-group input{accent-color:#CC0000;width:14px;height:14px}
+
+  /* GIRO AUTOCOMPLETE */
+  .autocomplete-wrap{position:relative}
+  .autocomplete-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:8px;max-height:220px;overflow-y:auto;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,0.12);display:none;margin-top:4px}
+  .autocomplete-list.show{display:block}
+  .autocomplete-item{padding:8px 11px;font-size:12px;cursor:pointer;border-bottom:1px solid #f5f5f5;display:flex;gap:8px}
+  .autocomplete-item:hover,.autocomplete-item.active{background:#fff0f0}
+  .autocomplete-item .ac-code{font-weight:700;color:#CC0000;flex-shrink:0}
+  .autocomplete-item .ac-desc{color:#333}
+  .autocomplete-empty{padding:10px 11px;font-size:12px;color:#999}
+  .giro-selected-pill{font-size:11px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:6px;padding:4px 8px;margin-top:2px;display:none}
+  .giro-selected-pill.show{display:block}
+
+  /* CHECKLIST */
+  .checklist-block{margin-bottom:16px}
+  .checklist-block:last-child{margin-bottom:0}
+  .checklist-block h4{font-size:12px;font-weight:600;color:#444;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .checklist-items{display:flex;flex-direction:column;gap:8px}
+  .checklist-item{display:flex;align-items:center;gap:9px;font-size:13px;color:#333;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:9px 12px;cursor:pointer}
+  .checklist-item input{accent-color:#CC0000;width:16px;height:16px;flex-shrink:0}
+  .checklist-item.checked{background:#f0fdf4;border-color:#bbf7d0}
+  .checklist-progress{font-size:11px;color:#888;margin-top:10px;text-align:right}
+  .admin-only{display:none}
+  body.role-admin .admin-only{display:block}
+  .ejecutivo-locked{background:#f5f5f5;color:#555}
 
   /* ACTIONS */
   .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
@@ -62,14 +107,14 @@
   @keyframes spin{to{transform:rotate(360deg)}}
 
   /* TOAST */
-  .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:200;display:none;animation:fadeup 0.25s ease}
+  .toast{position:fixed;bottom:24px;right:24px;left:24px;max-width:420px;margin-left:auto;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:200;display:none;animation:fadeup 0.25s ease}
   .toast.success{background:#16a34a;color:#fff}
   .toast.error{background:#dc2626;color:#fff}
   @keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
   /* RECORDS */
   .records-section{margin-top:24px}
-  .records-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .records-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
   .records-header h2{font-size:15px;font-weight:600;color:#1a1a1a}
   .badge{font-size:11px;padding:3px 10px;border-radius:20px;background:#f5f5f5;color:#888;border:1px solid #e5e5e5}
   .record-card{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:13px 16px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;transition:border 0.15s}
@@ -78,18 +123,57 @@
   .record-meta{font-size:12px;color:#777;margin-top:3px}
   .record-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
   .pill{font-size:11px;padding:2px 8px;border-radius:20px;background:#f5f5f5;color:#555}
+  .pill.pill-checklist{background:#fff7ed;color:#c2410c}
+  .pill.pill-validado{background:#f0fdf4;color:#16a34a}
   .record-date{font-size:11px;color:#aaa;text-align:right}
   .sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;margin-right:3px}
   .sync-dot.pending{background:#fbbf24}
   .empty-state{text-align:center;padding:32px 16px;color:#aaa;font-size:13px}
+  .btn-validar{font-size:11px;margin-top:8px;padding:5px 10px;border-radius:6px;border:1px solid #16a34a;background:#fff;color:#16a34a;cursor:pointer;font-weight:600}
+  .btn-validar.is-validado{background:#16a34a;color:#fff}
 
   @media(max-width:600px){
     .grid-2,.grid-3{grid-template-columns:1fr}
     .field.full{grid-column:1}
+    .toast{left:16px;right:16px;margin-left:0}
   }
 </style>
 </head>
 <body>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <h2>Registro de Ventas Getnet</h2>
+    <p>Identifícate para continuar</p>
+    <div class="login-field">
+      <label>Rol</label>
+      <select id="login-rol">
+        <option value="">Seleccionar...</option>
+        <option value="Ejecutivo Comercial">Ejecutivo Comercial</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </div>
+    <div class="login-field" id="login-nombre-wrap" style="display:none">
+      <label>Tu nombre</label>
+      <select id="login-nombre-select">
+        <option value="">Seleccionar...</option>
+        <option>Ariela Núñez</option>
+        <option>Belén Arroyo</option>
+        <option>Francesca Medel</option>
+        <option>Catherine Acevedo</option>
+        <option>Miguel Reyes</option>
+        <option value="__otro__">Otro (escribir)</option>
+      </select>
+      <input type="text" id="login-nombre-otro" placeholder="Escribe tu nombre" style="display:none;margin-top:6px">
+    </div>
+    <div class="login-field" id="login-admin-nombre-wrap" style="display:none">
+      <label>Tu nombre</label>
+      <input type="text" id="login-admin-nombre" placeholder="Ej: Marlon Ampuero">
+    </div>
+    <button class="btn-login" id="btn-login" onclick="iniciarSesion()">Ingresar</button>
+  </div>
+</div>
 
 <div class="topbar">
   <div class="topbar-left">
@@ -97,8 +181,15 @@
     <h1>Registro de Ventas</h1>
   </div>
   <div class="topbar-status">
-    <div class="status-dot" id="status-dot"></div>
-    <span id="status-text">Cargando...</span>
+    <span class="topbar-user" id="topbar-user" style="display:none">
+      <span id="topbar-user-name"></span>
+      <span class="role-badge" id="topbar-user-role"></span>
+      <button onclick="cerrarSesion()">Cambiar</button>
+    </span>
+    <span style="display:flex;align-items:center;gap:6px">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Cargando...</span>
+    </span>
   </div>
 </div>
 
@@ -124,6 +215,7 @@
         <div class="field">
           <label>RUT contacto *</label>
           <input type="text" id="rut-contacto" placeholder="12345678-9">
+          <div class="field-error" id="err-rut-contacto">RUT inválido (verifica el dígito verificador)</div>
         </div>
         <div class="field">
           <label>Nombres *</label>
@@ -148,6 +240,7 @@
         <div class="field">
           <label>RUT contratación</label>
           <input type="text" id="rut-cont" placeholder="12.345.678-9">
+          <div class="field-error" id="err-rut-cont">RUT inválido (verifica el dígito verificador)</div>
         </div>
         <div class="field">
           <label>Nombre fantasía / cliente</label>
@@ -157,17 +250,23 @@
           <label>Fecha de nacimiento</label>
           <input type="date" id="fecha-nac">
         </div>
-        <div class="field">
-          <label>Código actividad SII</label>
-          <input type="text" id="cod-sii" placeholder="Ej: 801003">
+        <div class="field autocomplete-wrap">
+          <label>Giro / Código actividad SII *</label>
+          <input type="text" id="giro-buscador" placeholder="Escribe para buscar (ej: restaurante, 4711...)" autocomplete="off">
+          <input type="hidden" id="cod-sii">
+          <div class="autocomplete-list" id="giro-list"></div>
+          <div class="giro-selected-pill" id="giro-pill"></div>
+          <div class="field-error" id="err-giro">Selecciona un giro de la lista</div>
         </div>
         <div class="field">
-          <label>Teléfono</label>
+          <label>Teléfono *</label>
           <input type="tel" id="telefono" placeholder="56912345678">
+          <div class="field-error" id="err-telefono">Formato inválido. Ej: 56912345678</div>
         </div>
         <div class="field">
-          <label>Correo electrónico</label>
+          <label>Correo electrónico *</label>
           <input type="email" id="email" placeholder="correo@dominio.com">
+          <div class="field-error" id="err-email">Correo inválido</div>
         </div>
       </div>
       <div style="margin-top:14px;display:flex;flex-direction:column;gap:12px">
@@ -209,7 +308,7 @@
           <input type="text" id="depto">
         </div>
         <div class="field">
-          <label>Región</label>
+          <label>Región *</label>
           <select id="region">
             <option value="">Seleccionar...</option>
             <option>Arica y Parinacota</option><option>Tarapacá</option><option>Antofagasta</option>
@@ -221,7 +320,7 @@
           </select>
         </div>
         <div class="field">
-          <label>Comuna</label>
+          <label>Comuna *</label>
           <input type="text" id="comuna">
         </div>
       </div>
@@ -262,7 +361,7 @@
     <div class="section-body">
       <div class="grid-3">
         <div class="field">
-          <label>Banco</label>
+          <label>Banco *</label>
           <select id="banco">
             <option value="">Seleccionar...</option>
             <option>Santander</option><option>Banco de Chile</option><option>BCI</option>
@@ -272,7 +371,7 @@
           </select>
         </div>
         <div class="field">
-          <label>Tipo de cuenta</label>
+          <label>Tipo de cuenta *</label>
           <select id="tipo-cuenta">
             <option value="">Seleccionar...</option>
             <option>Cuenta corriente</option><option>Cuenta vista</option>
@@ -280,10 +379,46 @@
           </select>
         </div>
         <div class="field">
-          <label>N° de cuenta</label>
+          <label>N° de cuenta *</label>
           <input type="text" id="num-cuenta">
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST DE VENTA -->
+  <div class="section">
+    <div class="section-title">
+      <span>Checklist de venta</span>
+      <span class="badge" id="checklist-badge">0 / 10</span>
+    </div>
+    <div class="section-body">
+      <div class="checklist-block">
+        <h4>📄 Verificación de documentos</h4>
+        <div class="checklist-items">
+          <label class="checklist-item"><input type="checkbox" data-chk="doc1"> Cédula de identidad del cliente verificada</label>
+          <label class="checklist-item"><input type="checkbox" data-chk="doc2"> RUT / razón social de la empresa verificado</label>
+          <label class="checklist-item"><input type="checkbox" data-chk="doc3"> Documento de domicilio comercial verificado</label>
+        </div>
+      </div>
+      <div class="checklist-block">
+        <h4>🔄 Proceso de venta</h4>
+        <div class="checklist-items">
+          <label class="checklist-item"><input type="checkbox" data-chk="proc1"> Contacto inicial confirmado con el cliente</label>
+          <label class="checklist-item"><input type="checkbox" data-chk="proc2"> Datos del cliente completados y revisados</label>
+          <label class="checklist-item"><input type="checkbox" data-chk="proc3"> Condiciones comerciales explicadas y aceptadas</label>
+          <label class="checklist-item"><input type="checkbox" data-chk="proc4"> Confirmación de venta enviada al cliente</label>
+        </div>
+      </div>
+      <div class="checklist-block">
+        <h4>📷 Evidencia fotográfica</h4>
+        <div class="checklist-items">
+          <label class="checklist-item"><input type="checkbox" data-chk="foto1"> Foto del POS instalado tomada</label>
+          <label class="checklist-item"><input type="checkbox" data-chk="foto2"> Foto del comprobante / boleta de prueba tomada</label>
+          <label class="checklist-item"><input type="checkbox" data-chk="foto3"> Foto de entrega firmada por el cliente tomada</label>
+        </div>
+      </div>
+      <div class="checklist-progress" id="checklist-progress-text">Marca cada paso a medida que lo completas. El Admin validará la venta después.</div>
     </div>
   </div>
 
@@ -332,18 +467,192 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────
-const STORAGE_KEY = 'getnet_ventas_v2';
+const STORAGE_KEY = 'getnet_ventas_v3';
 const URL_KEY = 'getnet_script_url';
+const USER_KEY = 'getnet_user_v1';
 
 let ventas = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 let scriptURL = localStorage.getItem(URL_KEY) || '';
+let currentUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+let giroSeleccionado = null;
+
+// ─── LISTADO DE GIROS SII (ACTECO) ───────────────────────
+// Curado desde la tabla oficial del SII. Ampliable: ver nota al final del archivo.
+const ACTECOS = [
+["011102","CULTIVO DE MAÍZ"],["011106","CULTIVO DE POROTOS"],["011200","CULTIVO DE ARROZ"],
+["011301","CULTIVO DE PAPAS"],["011306","CULTIVO DE HORTALIZAS Y MELONES"],["011901","CULTIVO DE FLORES"],
+["012112","CULTIVO DE UVA DESTINADA A LA PRODUCCIÓN DE VINO"],["012120","CULTIVO DE UVA PARA MESA"],
+["012200","CULTIVO DE FRUTAS TROPICALES Y SUBTROPICALES (PALTAS)"],["012300","CULTIVO DE CÍTRICOS"],
+["012400","CULTIVO DE FRUTAS DE PEPITA Y DE HUESO"],["012600","CULTIVO DE FRUTOS OLEAGINOSOS (ACEITUNAS)"],
+["013000","CULTIVO DE PLANTAS VIVAS / VIVEROS"],["014102","CRÍA DE GANADO BOVINO PARA CARNE"],
+["014500","CRÍA DE CERDOS"],["014601","CRÍA DE AVES DE CORRAL PARA CARNE"],["014602","CRÍA DE AVES DE CORRAL PARA HUEVOS"],
+["014901","APICULTURA"],["016100","ACTIVIDADES DE APOYO A LA AGRICULTURA"],["021002","SILVICULTURA Y OTRAS ACTIVIDADES FORESTALES"],
+["022000","EXTRACCIÓN DE MADERA"],["031120","PESCA MARÍTIMA ARTESANAL"],["032110","CULTIVO Y CRIANZA DE PECES MARINOS (ACUICULTURA)"],
+["040000","EXTRACCIÓN Y PROCESAMIENTO DE COBRE"],["072910","EXTRACCIÓN DE ORO Y PLATA"],
+["089110","EXTRACCIÓN Y PROCESAMIENTO DE LITIO"],["089900","EXPLOTACIÓN DE OTRAS MINAS Y CANTERAS N.C.P."],
+["101020","ELABORACIÓN Y CONSERVACIÓN DE CARNE Y PRODUCTOS CÁRNICOS"],["102020","ELABORACIÓN Y CONSERVACIÓN DE SALMÓNIDOS"],
+["103000","ELABORACIÓN Y CONSERVACIÓN DE FRUTAS, LEGUMBRES Y HORTALIZAS"],["105000","ELABORACIÓN DE PRODUCTOS LÁCTEOS"],
+["107100","ELABORACIÓN DE PRODUCTOS DE PANADERÍA Y PASTELERÍA"],["107300","ELABORACIÓN DE CACAO, CHOCOLATE Y CONFITERÍA"],
+["107500","ELABORACIÓN DE COMIDAS Y PLATOS PREPARADOS ENVASADOS"],["107901","ELABORACIÓN DE TÉ, CAFÉ, MATE E INFUSIONES"],
+["110110","ELABORACIÓN DE PISCO"],["110200","ELABORACIÓN DE VINOS"],["110300","ELABORACIÓN DE BEBIDAS MALTEADAS Y DE MALTA"],
+["110401","ELABORACIÓN DE BEBIDAS NO ALCOHÓLICAS"],["141001","FABRICACIÓN DE PRENDAS DE VESTIR DE MATERIALES TEXTILES"],
+["152000","FABRICACIÓN DE CALZADO"],["181101","IMPRESIÓN DE LIBROS"],["181109","OTRAS ACTIVIDADES DE IMPRESIÓN"],
+["202300","FABRICACIÓN DE JABONES, DETERGENTES, PERFUMES Y PREPARADOS DE TOCADOR"],["210000","FABRICACIÓN DE PRODUCTOS FARMACÉUTICOS"],
+["222000","FABRICACIÓN DE PRODUCTOS DE PLÁSTICO"],["231009","FABRICACIÓN DE PRODUCTOS DE VIDRIO N.C.P."],
+["251100","FABRICACIÓN DE PRODUCTOS METÁLICOS PARA USO ESTRUCTURAL"],["259300","FABRICACIÓN DE ARTÍCULOS DE CUCHILLERÍA Y FERRETERÍA"],
+["262000","FABRICACIÓN DE COMPUTADORES Y EQUIPO PERIFÉRICO"],["263000","FABRICACIÓN DE EQUIPO DE COMUNICACIONES"],
+["275000","FABRICACIÓN DE APARATOS DE USO DOMÉSTICO"],["310001","FABRICACIÓN DE MUEBLES PRINCIPALMENTE DE MADERA"],
+["321100","FABRICACIÓN DE JOYAS Y ARTÍCULOS CONEXOS"],["321200","FABRICACIÓN DE BISUTERÍA Y ARTÍCULOS CONEXOS"],
+["325009","FABRICACIÓN DE INSTRUMENTOS Y MATERIALES MÉDICOS Y ODONTOLÓGICOS N.C.P."],["329000","OTRAS INDUSTRIAS MANUFACTURERAS N.C.P."],
+["331100","REPARACIÓN DE PRODUCTOS ELABORADOS DE METAL"],["410010","CONSTRUCCIÓN DE EDIFICIOS PARA USO RESIDENCIAL"],
+["410020","CONSTRUCCIÓN DE EDIFICIOS PARA USO NO RESIDENCIAL"],["421000","CONSTRUCCIÓN DE CARRETERAS Y LÍNEAS DE FERROCARRIL"],
+["431100","DEMOLICIÓN"],["431200","PREPARACIÓN DEL TERRENO"],["432100","INSTALACIONES ELÉCTRICAS"],
+["432200","INSTALACIONES DE GASFITERÍA, CALEFACCIÓN Y AIRE ACONDICIONADO"],["433000","TERMINACIÓN Y ACABADO DE EDIFICIOS"],
+["439000","OTRAS ACTIVIDADES ESPECIALIZADAS DE CONSTRUCCIÓN"],
+["451001","VENTA AL POR MAYOR DE VEHÍCULOS AUTOMOTORES"],["451002","VENTA AL POR MENOR DE VEHÍCULOS AUTOMOTORES NUEVOS O USADOS"],
+["452001","SERVICIO DE LAVADO DE VEHÍCULOS AUTOMOTORES"],["452002","MANTENIMIENTO Y REPARACIÓN DE VEHÍCULOS AUTOMOTORES"],
+["453000","VENTA DE PARTES, PIEZAS Y ACCESORIOS PARA VEHÍCULOS AUTOMOTORES"],["454001","VENTA DE MOTOCICLETAS"],
+["454003","MANTENIMIENTO Y REPARACIÓN DE MOTOCICLETAS"],
+["462010","VENTA AL POR MAYOR DE MATERIAS PRIMAS AGRÍCOLAS"],["463011","VENTA AL POR MAYOR DE FRUTAS Y VERDURAS"],
+["463012","VENTA AL POR MAYOR DE CARNE Y PRODUCTOS CÁRNICOS"],["463019","VENTA AL POR MAYOR DE HUEVOS, LÁCTEOS Y ABARROTES"],
+["463020","VENTA AL POR MAYOR DE BEBIDAS ALCOHÓLICAS Y NO ALCOHÓLICAS"],["464100","VENTA AL POR MAYOR DE TEXTILES, PRENDAS DE VESTIR Y CALZADO"],
+["464901","VENTA AL POR MAYOR DE MUEBLES, EXCEPTO DE OFICINA"],["464902","VENTA AL POR MAYOR DE ARTÍCULOS ELÉCTRICOS Y ELECTRÓNICOS PARA EL HOGAR"],
+["464903","VENTA AL POR MAYOR DE PERFUMERÍA, TOCADOR Y COSMÉTICOS"],["464904","VENTA AL POR MAYOR DE PAPELERÍA Y ESCRITORIO"],
+["464907","VENTA AL POR MAYOR DE PRODUCTOS FARMACÉUTICOS Y MEDICINALES"],
+["465100","VENTA AL POR MAYOR DE COMPUTADORES, EQUIPO PERIFÉRICO Y PROGRAMAS INFORMÁTICOS"],
+["465200","VENTA AL POR MAYOR DE EQUIPO, PARTES Y PIEZAS ELECTRÓNICAS Y DE TELECOMUNICACIONES"],
+["466100","VENTA AL POR MAYOR DE COMBUSTIBLES SÓLIDOS, LÍQUIDOS Y GASEOSOS"],["466200","VENTA AL POR MAYOR DE METALES Y MINERALES METALÍFEROS"],
+["466302","VENTA AL POR MAYOR DE MATERIALES DE CONSTRUCCIÓN Y FERRETERÍA"],["466901","VENTA AL POR MAYOR DE PRODUCTOS QUÍMICOS"],
+["469000","VENTA AL POR MAYOR NO ESPECIALIZADA"],
+["471100","VENTA AL POR MENOR EN SUPERMERCADOS E HIPERMERCADOS"],["471910","VENTA AL POR MENOR DE VESTUARIO Y HOGAR (GRANDES TIENDAS)"],
+["471990","OTRAS VENTAS AL POR MENOR EN COMERCIOS NO ESPECIALIZADOS N.C.P."],
+["472101","VENTA AL POR MENOR DE ALIMENTOS (ALMACENES Y MINIMARKET)"],["472102","VENTA AL POR MENOR DE CARNE Y PRODUCTOS CÁRNICOS"],
+["472103","VENTA AL POR MENOR DE FRUTAS Y VERDURAS (VERDULERÍAS)"],["472104","VENTA AL POR MENOR DE PESCADO Y MARISCOS"],
+["472105","VENTA AL POR MENOR DE PANADERÍA Y PASTELERÍA"],["472200","VENTA AL POR MENOR DE BEBIDAS ALCOHÓLICAS Y NO ALCOHÓLICAS (BOTILLERÍAS)"],
+["472300","VENTA AL POR MENOR DE TABACO Y PRODUCTOS DE TABACO"],
+["473000","VENTA AL POR MENOR DE COMBUSTIBLES PARA VEHÍCULOS (BENCINERAS)"],
+["474100","VENTA AL POR MENOR DE COMPUTADORES Y EQUIPO DE TELECOMUNICACIONES"],["474200","VENTA AL POR MENOR DE EQUIPO DE SONIDO Y VIDEO"],
+["475201","VENTA AL POR MENOR DE FERRETERÍA Y MATERIALES DE CONSTRUCCIÓN"],["475901","VENTA AL POR MENOR DE MUEBLES Y COLCHONES"],
+["475909","VENTA AL POR MENOR DE APARATOS ELÉCTRICOS Y ENSERES DOMÉSTICOS"],
+["476101","VENTA AL POR MENOR DE LIBROS"],["476103","VENTA AL POR MENOR DE PAPELERÍA Y ESCRITORIO"],
+["476302","VENTA AL POR MENOR DE BICICLETAS Y REPUESTOS"],["476400","VENTA AL POR MENOR DE JUEGOS Y JUGUETES"],
+["477101","VENTA AL POR MENOR DE CALZADO"],["477102","VENTA AL POR MENOR DE PRENDAS Y ACCESORIOS DE VESTIR"],
+["477201","VENTA AL POR MENOR DE PRODUCTOS FARMACÉUTICOS (FARMACIAS)"],["477203","VENTA AL POR MENOR DE PERFUMERÍA Y COSMÉTICOS"],
+["477391","VENTA AL POR MENOR DE ALIMENTO Y ACCESORIOS PARA MASCOTAS (PET SHOP)"],["477394","VENTA AL POR MENOR DE JOYERÍA, BISUTERÍA Y RELOJERÍA"],
+["477396","VENTA AL POR MENOR DE RECUERDOS, ARTESANÍAS Y ARTÍCULOS RELIGIOSOS"],["477397","VENTA AL POR MENOR DE FLORES, PLANTAS Y SEMILLAS"],
+["477398","VENTA AL POR MENOR DE MASCOTAS"],["477399","VENTA AL POR MENOR DE OTROS PRODUCTOS EN COMERCIOS ESPECIALIZADOS N.C.P."],
+["477402","VENTA AL POR MENOR DE ROPA USADA"],
+["478100","VENTA AL POR MENOR DE ALIMENTOS Y BEBIDAS EN FERIAS Y MERCADOS"],["478900","VENTA AL POR MENOR DE OTROS PRODUCTOS EN FERIAS Y MERCADOS"],
+["479100","VENTA AL POR MENOR POR CORREO, INTERNET Y VÍA TELEFÓNICA (E-COMMERCE)"],
+["479902","VENTA AL POR MENOR MEDIANTE MÁQUINAS EXPENDEDORAS"],["479903","VENTA AL POR MENOR POR COMISIONISTAS"],
+["479909","OTRAS VENTAS AL POR MENOR NO REALIZADAS EN COMERCIOS N.C.P."],
+["492300","TRANSPORTE DE CARGA POR CARRETERA"],["492230","SERVICIOS DE TRANSPORTE DE PASAJEROS EN TAXIS LIBRES Y RADIOTAXIS"],
+["492240","SERVICIOS DE TRANSPORTE A TURISTAS"],["492250","TRANSPORTE DE PASAJEROS EN BUSES INTERURBANOS"],
+["521009","OTROS SERVICIOS DE ALMACENAMIENTO Y DEPÓSITO"],["522120","EXPLOTACIÓN DE ESTACIONAMIENTOS DE VEHÍCULOS Y PARQUÍMETROS"],
+["551001","HOTELES, RESIDENCIALES Y MOTELES CON SERVICIO DE ALOJAMIENTO"],["552001","CAMPING Y SERVICIOS RELACIONADOS"],
+["561000","ACTIVIDADES DE RESTAURANTES"],["562001","SERVICIOS DE CONCESIÓN DE ALIMENTOS"],
+["563000","ACTIVIDADES DE CAFÉS, BARES, PUBS Y SIMILARES"],
+["582000","EDICIÓN DE PROGRAMAS INFORMÁTICOS"],["619000","OTRAS ACTIVIDADES DE TELECOMUNICACIONES"],
+["620100","ACTIVIDADES DE PROGRAMACIÓN INFORMÁTICA (DESARROLLO DE SOFTWARE)"],["620200","ACTIVIDADES DE CONSULTORÍA INFORMÁTICA"],
+["620900","OTRAS ACTIVIDADES DE TECNOLOGÍAS DE LA INFORMACIÓN"],["631100","PROCESAMIENTO DE DATOS, HOSPEDAJE Y ACTIVIDADES CONEXAS"],
+["631200","PORTALES WEB"],
+["641910","ACTIVIDADES BANCARIAS"],["649201","ACTIVIDADES DE FINANCIERAS"],["651100","SEGUROS DE VIDA"],
+["651220","ACTIVIDADES DE ISAPRES"],["661901","CORRETAJE DE SEGUROS"],
+["681000","ACTIVIDADES INMOBILIARIAS REALIZADAS CON BIENES PROPIOS O ARRENDADOS"],["682100","ACTIVIDADES INMOBILIARIAS REALIZADAS A CAMBIO DE UNA RETRIBUCIÓN (CORRETAJE)"],
+["691001","SERVICIOS DE ASESORAMIENTO JURÍDICO (ABOGADOS)"],["692000","ACTIVIDADES DE CONTABILIDAD Y AUDITORÍA"],
+["701000","ACTIVIDADES DE OFICINAS PRINCIPALES"],["702000","ACTIVIDADES DE CONSULTORÍA DE GESTIÓN"],
+["711001","SERVICIOS DE ARQUITECTURA"],["711002","SERVICIOS DE INGENIERÍA"],
+["731000","PUBLICIDAD"],["741009","OTRAS ACTIVIDADES DE DISEÑO ESPECIALIZADO"],["749001","FOTOGRAFÍA"],
+["771100","ALQUILER DE VEHÍCULOS AUTOMOTORES"],["801000","ACTIVIDADES DE SEGURIDAD PRIVADA"],
+["812000","ACTIVIDADES DE LIMPIEZA DE EDIFICIOS"],["823000","ORGANIZACIÓN DE CONVENCIONES Y EXPOSICIONES COMERCIALES"],
+["850012","ENSEÑANZA PRIMARIA Y SECUNDARIA PÚBLICA"],["853120","ENSEÑANZA SUPERIOR EN UNIVERSIDADES PRIVADAS"],
+["854902","SERVICIOS PERSONALES DE EDUCACIÓN (CLASES PARTICULARES)"],
+["862031","SERVICIOS DE MÉDICOS INDEPENDIENTES (CONSULTA MÉDICA)"],["862032","SERVICIOS DE ODONTÓLOGOS INDEPENDIENTES"],
+["869010","ACTIVIDADES DE LABORATORIOS CLÍNICOS"],["869021","ACTIVIDADES DE OTROS PROFESIONALES DE LA SALUD INDEPENDIENTES"],
+["960300","SERVICIOS FUNERARIOS Y CONEXOS"],
+["900001","ACTIVIDADES CREATIVAS, ARTÍSTICAS Y DE ENTRETENIMIENTO"],["931200","ACTIVIDADES DE CLUBES DEPORTIVOS"],
+["932100","ACTIVIDADES DE PARQUES DE ATRACCIONES Y PARQUES TEMÁTICOS"],["932909","OTRAS ACTIVIDADES DE ESPARCIMIENTO Y RECREATIVAS N.C.P."],
+["951100","REPARACIÓN DE COMPUTADORES Y EQUIPO PERIFÉRICO"],["952100","REPARACIÓN DE APARATOS ELECTRÓNICOS DE CONSUMO"],
+["952300","REPARACIÓN DE CALZADO Y ARTÍCULOS DE CUERO"],["952900","REPARACIÓN DE OTROS EFECTOS PERSONALES Y ENSERES DOMÉSTICOS"],
+["960100","LAVADO Y LIMPIADO DE PRODUCTOS TEXTILES Y DE PIEL (LAVANDERÍAS)"],["960200","PELUQUERÍA Y TRATAMIENTOS DE BELLEZA"],
+["960910","SERVICIOS DE ACTIVIDADES FÍSICAS DE ACONDICIONAMIENTO (GIMNASIOS)"],["960990","OTRAS ACTIVIDADES DE SERVICIOS PERSONALES N.C.P."]
+];
+
+const CHECKLIST_KEYS = ['doc1','doc2','doc3','proc1','proc2','proc3','proc4','foto1','foto2','foto3'];
+
+// ─── HELPERS ──────────────────────────────────────────────
+function g(id) { return document.getElementById(id); }
+function gv(id) { return g(id).value.trim(); }
+function gc(id) { return g(id).checked; }
+function radio(name) {
+  const r = document.querySelector('input[name="' + name + '"]:checked');
+  return r ? r.value : '';
+}
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+
+// ─── LOGIN / SESIÓN ───────────────────────────────────────
+document.getElementById('login-rol').addEventListener('change', function(){
+  const rol = this.value;
+  g('login-nombre-wrap').style.display = rol === 'Ejecutivo Comercial' ? 'flex' : 'none';
+  g('login-admin-nombre-wrap').style.display = rol === 'Admin' ? 'flex' : 'none';
+});
+document.getElementById('login-nombre-select').addEventListener('change', function(){
+  g('login-nombre-otro').style.display = this.value === '__otro__' ? 'block' : 'none';
+});
+
+function iniciarSesion() {
+  const rol = g('login-rol').value;
+  if (!rol) { alert('Selecciona un rol'); return; }
+  let nombre = '';
+  if (rol === 'Ejecutivo Comercial') {
+    const sel = g('login-nombre-select').value;
+    nombre = sel === '__otro__' ? g('login-nombre-otro').value.trim() : sel;
+  } else {
+    nombre = g('login-admin-nombre').value.trim();
+  }
+  if (!nombre) { alert('Ingresa tu nombre'); return; }
+  currentUser = { rol, nombre };
+  localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+  aplicarSesion();
+}
+
+function cerrarSesion() {
+  currentUser = null;
+  localStorage.removeItem(USER_KEY);
+  aplicarSesion();
+}
+
+function aplicarSesion() {
+  if (!currentUser) {
+    g('login-overlay').classList.remove('hidden');
+    g('topbar-user').style.display = 'none';
+    document.body.classList.remove('role-admin');
+    return;
+  }
+  g('login-overlay').classList.add('hidden');
+  g('topbar-user').style.display = 'flex';
+  g('topbar-user-name').textContent = currentUser.nombre;
+  g('topbar-user-role').textContent = currentUser.rol;
+  document.body.classList.toggle('role-admin', currentUser.rol === 'Admin');
+  if (currentUser.rol === 'Ejecutivo Comercial') {
+    g('ejecutivo').value = currentUser.nombre;
+    g('ejecutivo').readOnly = true;
+    g('ejecutivo').classList.add('ejecutivo-locked');
+  } else {
+    g('ejecutivo').readOnly = false;
+    g('ejecutivo').classList.remove('ejecutivo-locked');
+  }
+  renderRecords();
+}
 
 // ─── INIT ─────────────────────────────────────────────────
 window.onload = function() {
   const hoy = new Date().toISOString().split('T')[0];
   document.getElementById('fecha-venta').value = hoy;
   actualizarEstado();
+  aplicarSesion();
   renderRecords();
+  actualizarChecklistBadge();
 };
 
 function actualizarEstado() {
@@ -373,29 +682,215 @@ function guardarURL() {
   showToast('¡Conectado correctamente!', 'success');
 }
 
-// ─── HELPERS ──────────────────────────────────────────────
-function g(id) { return document.getElementById(id); }
-function gv(id) { return g(id).value.trim(); }
-function gc(id) { return g(id).checked; }
-function radio(name) {
-  const r = document.querySelector('input[name="' + name + '"]:checked');
-  return r ? r.value : '';
+// ─── VALIDACIÓN DE RUT CHILENO (módulo 11) ───────────────
+function limpiarRut(rut) {
+  return rut.replace(/[^0-9kK]/g, '').toUpperCase();
 }
-function todayISO() { return new Date().toISOString().split('T')[0]; }
+function validarRut(rutSucio) {
+  const rut = limpiarRut(rutSucio);
+  if (rut.length < 2) return false;
+  const cuerpo = rut.slice(0, -1);
+  const dv = rut.slice(-1);
+  if (!/^[0-9]+$/.test(cuerpo)) return false;
+  let suma = 0, multiplo = 2;
+  for (let i = cuerpo.length - 1; i >= 0; i--) {
+    suma += multiplo * parseInt(cuerpo[i], 10);
+    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+  }
+  const resto = 11 - (suma % 11);
+  const dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : String(resto);
+  return dvEsperado === dv;
+}
+function formatearRut(rutSucio) {
+  const rut = limpiarRut(rutSucio);
+  if (rut.length < 2) return rut;
+  const cuerpo = rut.slice(0, -1);
+  const dv = rut.slice(-1);
+  let cuerpoFmt = '';
+  for (let i = 0; i < cuerpo.length; i++) {
+    const posDesdeFinal = cuerpo.length - i;
+    cuerpoFmt += cuerpo[i];
+    if (posDesdeFinal > 1 && posDesdeFinal % 3 === 1) cuerpoFmt += '.';
+  }
+  return cuerpoFmt + '-' + dv;
+}
+function setupRutField(inputId, errId) {
+  const input = g(inputId);
+  input.addEventListener('blur', function() {
+    const val = this.value.trim();
+    if (!val) { this.classList.remove('valid-ok','required-empty'); g(errId).classList.remove('show'); return; }
+    if (validarRut(val)) {
+      this.value = formatearRut(val);
+      this.classList.add('valid-ok');
+      this.classList.remove('required-empty');
+      g(errId).classList.remove('show');
+    } else {
+      this.classList.remove('valid-ok');
+      this.classList.add('required-empty');
+      g(errId).classList.add('show');
+    }
+  });
+}
+setupRutField('rut-contacto','err-rut-contacto');
+setupRutField('rut-cont','err-rut-cont');
+
+// ─── VALIDACIÓN TELÉFONO / EMAIL ──────────────────────────
+function validarTelefono(t) { return /^(\+?56)?9?\d{8,9}$/.test(t.replace(/\s|-/g,'')); }
+function validarEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+g('telefono').addEventListener('blur', function(){
+  const val = this.value.trim();
+  if (!val) return;
+  const ok = validarTelefono(val);
+  this.classList.toggle('required-empty', !ok);
+  this.classList.toggle('valid-ok', ok);
+  g('err-telefono').classList.toggle('show', !ok);
+});
+g('email').addEventListener('blur', function(){
+  const val = this.value.trim();
+  if (!val) return;
+  const ok = validarEmail(val);
+  this.classList.toggle('required-empty', !ok);
+  this.classList.toggle('valid-ok', ok);
+  g('err-email').classList.toggle('show', !ok);
+});
+
+// ─── AUTOCOMPLETADO DE GIRO SII ───────────────────────────
+function stripAccents(s) {
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+const giroInput = g('giro-buscador');
+const giroList = g('giro-list');
+let giroActiveIndex = -1;
+
+giroInput.addEventListener('input', function(){
+  const q = stripAccents(this.value.trim().toLowerCase());
+  giroSeleccionado = null;
+  g('cod-sii').value = '';
+  g('giro-pill').classList.remove('show');
+  if (!q) { giroList.classList.remove('show'); return; }
+  const resultados = ACTECOS.filter(([cod, desc]) => {
+    return cod.startsWith(q) || stripAccents(desc.toLowerCase()).includes(q);
+  }).slice(0, 30);
+  renderGiroList(resultados);
+});
+giroInput.addEventListener('focus', function(){
+  if (this.value.trim()) this.dispatchEvent(new Event('input'));
+});
+document.addEventListener('click', function(e){
+  if (!e.target.closest('.autocomplete-wrap')) giroList.classList.remove('show');
+});
+giroInput.addEventListener('keydown', function(e){
+  const items = giroList.querySelectorAll('.autocomplete-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') { e.preventDefault(); giroActiveIndex = Math.min(giroActiveIndex+1, items.length-1); marcarActivo(items); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); giroActiveIndex = Math.max(giroActiveIndex-1, 0); marcarActivo(items); }
+  else if (e.key === 'Enter') { e.preventDefault(); if (items[giroActiveIndex]) items[giroActiveIndex].click(); }
+});
+function marcarActivo(items) {
+  items.forEach((it,i)=> it.classList.toggle('active', i===giroActiveIndex));
+  if (items[giroActiveIndex]) items[giroActiveIndex].scrollIntoView({block:'nearest'});
+}
+function renderGiroList(resultados) {
+  giroActiveIndex = -1;
+  if (!resultados.length) {
+    giroList.innerHTML = '<div class="autocomplete-empty">Sin resultados. Puedes seguir escribiendo o probar otra palabra.</div>';
+    giroList.classList.add('show');
+    return;
+  }
+  giroList.innerHTML = resultados.map(([cod,desc]) =>
+    '<div class="autocomplete-item" data-cod="'+cod+'" data-desc="'+desc.replace(/"/g,'&quot;')+'"><span class="ac-code">'+cod+'</span><span class="ac-desc">'+desc+'</span></div>'
+  ).join('');
+  giroList.classList.add('show');
+  giroList.querySelectorAll('.autocomplete-item').forEach(it => {
+    it.addEventListener('click', function(){
+      const cod = this.dataset.cod, desc = this.dataset.desc;
+      giroSeleccionado = { cod, desc };
+      giroInput.value = cod + ' — ' + desc;
+      g('cod-sii').value = cod;
+      g('giro-pill').textContent = '✓ ' + cod + ' — ' + desc;
+      g('giro-pill').classList.add('show');
+      g('err-giro').classList.remove('show');
+      giroInput.classList.remove('required-empty');
+      giroList.classList.remove('show');
+    });
+  });
+}
+
+// ─── CHECKLIST ────────────────────────────────────────────
+document.querySelectorAll('[data-chk]').forEach(chk => {
+  chk.addEventListener('change', function(){
+    this.closest('.checklist-item').classList.toggle('checked', this.checked);
+    actualizarChecklistBadge();
+  });
+});
+function leerChecklist() {
+  const data = {};
+  document.querySelectorAll('[data-chk]').forEach(chk => { data[chk.dataset.chk] = chk.checked; });
+  return data;
+}
+function actualizarChecklistBadge() {
+  const data = leerChecklist();
+  const total = CHECKLIST_KEYS.length;
+  const marcados = CHECKLIST_KEYS.filter(k => data[k]).length;
+  g('checklist-badge').textContent = marcados + ' / ' + total;
+}
+function setChecklist(data) {
+  document.querySelectorAll('[data-chk]').forEach(chk => {
+    chk.checked = !!(data && data[chk.dataset.chk]);
+    chk.closest('.checklist-item').classList.toggle('checked', chk.checked);
+  });
+  actualizarChecklistBadge();
+}
 
 // ─── GUARDAR VENTA ────────────────────────────────────────
 async function guardarVenta() {
-  const rutContacto = gv('rut-contacto');
-  const nombres = gv('nombres');
+  const errores = [];
 
-  if (!rutContacto || !nombres) {
-    g('rut-contacto').classList.add('required-empty');
-    g('nombres').classList.add('required-empty');
-    showToast('RUT contacto y Nombres son requeridos', 'error');
+  const rutContacto = gv('rut-contacto');
+  if (!rutContacto) { g('rut-contacto').classList.add('required-empty'); errores.push('RUT contacto'); }
+  else if (!validarRut(rutContacto)) { g('rut-contacto').classList.add('required-empty'); g('err-rut-contacto').classList.add('show'); errores.push('RUT contacto inválido'); }
+
+  const nombres = gv('nombres');
+  if (!nombres) { g('nombres').classList.add('required-empty'); errores.push('Nombres'); } else { g('nombres').classList.remove('required-empty'); }
+
+  const telefono = gv('telefono');
+  if (!telefono) { g('telefono').classList.add('required-empty'); errores.push('Teléfono'); }
+  else if (!validarTelefono(telefono)) { g('telefono').classList.add('required-empty'); g('err-telefono').classList.add('show'); errores.push('Teléfono inválido'); }
+
+  const email = gv('email');
+  if (!email) { g('email').classList.add('required-empty'); errores.push('Correo'); }
+  else if (!validarEmail(email)) { g('email').classList.add('required-empty'); g('err-email').classList.add('show'); errores.push('Correo inválido'); }
+
+  if (!g('cod-sii').value) { giroInput.classList.add('required-empty'); g('err-giro').classList.add('show'); errores.push('Giro SII'); }
+
+  const region = gv('region');
+  if (!region) { g('region').classList.add('required-empty'); errores.push('Región'); } else { g('region').classList.remove('required-empty'); }
+
+  const comuna = gv('comuna');
+  if (!comuna) { g('comuna').classList.add('required-empty'); errores.push('Comuna'); } else { g('comuna').classList.remove('required-empty'); }
+
+  const banco = gv('banco');
+  if (!banco) { g('banco').classList.add('required-empty'); errores.push('Banco'); } else { g('banco').classList.remove('required-empty'); }
+
+  const tipoCuenta = gv('tipo-cuenta');
+  if (!tipoCuenta) { g('tipo-cuenta').classList.add('required-empty'); errores.push('Tipo de cuenta'); } else { g('tipo-cuenta').classList.remove('required-empty'); }
+
+  const numCuenta = gv('num-cuenta');
+  if (!numCuenta) { g('num-cuenta').classList.add('required-empty'); errores.push('N° de cuenta'); } else { g('num-cuenta').classList.remove('required-empty'); }
+
+  if (errores.length) {
+    showToast('Faltan o son inválidos: ' + errores.join(', '), 'error');
     return;
   }
-  g('rut-contacto').classList.remove('required-empty');
-  g('nombres').classList.remove('required-empty');
+
+  const rutContActual = gv('rut-cont');
+  if (rutContActual && !validarRut(rutContActual)) {
+    g('rut-cont').classList.add('required-empty');
+    g('err-rut-cont').classList.add('show');
+    showToast('El RUT de contratación es inválido', 'error');
+    return;
+  }
 
   const venta = {
     id: Date.now(),
@@ -404,19 +899,20 @@ async function guardarVenta() {
     nombres,
     apPaterno: gv('ap-paterno'),
     apMaterno: gv('ap-materno'),
-    rutCont: gv('rut-cont'),
+    rutCont: rutContActual,
     nombreNegocio: gv('nombre-negocio'),
     fechaNac: gv('fecha-nac'),
-    codSII: gv('cod-sii'),
-    telefono: gv('telefono'),
-    email: gv('email'),
+    codSII: g('cod-sii').value,
+    giroDesc: giroSeleccionado ? giroSeleccionado.desc : '',
+    telefono,
+    email,
     sociedad: radio('sociedad'),
     nacionalidad: radio('nac'),
     calle: gv('calle'),
     numCalle: gv('num-calle'),
     depto: gv('depto'),
-    region: gv('region'),
-    comuna: gv('comuna'),
+    region,
+    comuna,
     depositos: gv('depositos'),
     cantPos: gv('cant-pos'),
     propina: gc('propina'),
@@ -424,11 +920,16 @@ async function guardarVenta() {
     sinTecnico: gc('sin-tecnico'),
     entregaInm: gc('entrega-inm'),
     boletaElect: gc('boleta-elect'),
-    banco: gv('banco'),
-    tipoCuenta: gv('tipo-cuenta'),
-    numCuenta: gv('num-cuenta'),
+    banco,
+    tipoCuenta,
+    numCuenta,
     ejecutivo: gv('ejecutivo'),
     obs: gv('obs'),
+    checklist: leerChecklist(),
+    validado: false,
+    validadoPor: '',
+    registradoPor: currentUser ? currentUser.nombre : '',
+    rolRegistro: currentUser ? currentUser.rol : '',
     synced: false
   };
 
@@ -442,7 +943,7 @@ async function guardarVenta() {
     try {
       const resp = await fetch(scriptURL, {
         method: 'POST',
-        body: JSON.stringify(venta)
+        body: JSON.stringify(Object.assign({action:'crear'}, venta))
       });
       const result = await resp.json();
       if (result.status === 'ok') {
@@ -470,11 +971,34 @@ async function guardarVenta() {
   g('btn-text').textContent = 'Guardar en Google Sheets';
 }
 
+// ─── VALIDACIÓN ADMIN ─────────────────────────────────────
+async function toggleValidacion(id) {
+  const venta = ventas.find(v => v.id === id);
+  if (!venta) return;
+  venta.validado = !venta.validado;
+  venta.validadoPor = venta.validado ? (currentUser ? currentUser.nombre : '') : '';
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ventas));
+  renderRecords();
+  if (scriptURL) {
+    try {
+      await fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'validar', id: venta.id, validado: venta.validado, validadoPor: venta.validadoPor })
+      });
+    } catch (err) { /* se queda validado localmente aunque falle el envío */ }
+  }
+}
+
 // ─── RESET ────────────────────────────────────────────────
 function resetForm() {
   ['rut-contacto','nombres','ap-paterno','ap-materno','rut-cont','nombre-negocio',
-   'fecha-nac','cod-sii','telefono','email','calle','num-calle','depto','comuna',
-   'num-cuenta','ejecutivo','obs'].forEach(id => { g(id).value = ''; });
+   'fecha-nac','telefono','email','calle','num-calle','depto','comuna',
+   'num-cuenta','obs'].forEach(id => { g(id).value = ''; g(id).classList.remove('required-empty','valid-ok'); });
+  giroInput.value = '';
+  g('cod-sii').value = '';
+  giroSeleccionado = null;
+  g('giro-pill').classList.remove('show');
+  document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
   g('depositos').value = '1';
   g('cant-pos').value = '1';
   g('region').value = '';
@@ -485,29 +1009,48 @@ function resetForm() {
   if (nacChilena) nacChilena.checked = true;
   document.querySelectorAll('input[name="sociedad"]').forEach(r => r.checked = false);
   g('fecha-venta').value = todayISO();
+  setChecklist(null);
+  if (currentUser && currentUser.rol === 'Ejecutivo Comercial') {
+    g('ejecutivo').value = currentUser.nombre;
+  } else {
+    g('ejecutivo').value = '';
+  }
 }
 
 // ─── RENDER RECORDS ───────────────────────────────────────
 function renderRecords() {
   const list = g('records-list');
-  g('count-badge').textContent = ventas.length + ' registro' + (ventas.length !== 1 ? 's' : '');
-  if (ventas.length === 0) {
+  let visibles = ventas;
+  if (currentUser && currentUser.rol === 'Ejecutivo Comercial') {
+    visibles = ventas.filter(v => v.ejecutivo === currentUser.nombre);
+  }
+  g('count-badge').textContent = visibles.length + ' registro' + (visibles.length !== 1 ? 's' : '');
+  if (visibles.length === 0) {
     list.innerHTML = '<div class="empty-state">Aún no hay ventas registradas.</div>';
     return;
   }
-  list.innerHTML = ventas.map(v => `
+  list.innerHTML = visibles.map(v => {
+    const chk = v.checklist || {};
+    const totalChk = CHECKLIST_KEYS.length;
+    const hechosChk = CHECKLIST_KEYS.filter(k => chk[k]).length;
+    const esAdmin = currentUser && currentUser.rol === 'Admin';
+    return `
     <div class="record-card">
       <div>
-        <div class="record-name">${v.nombres} ${v.apPaterno} ${v.apMaterno}</div>
+        <div class="record-name">${v.nombres} ${v.apPaterno||''} ${v.apMaterno||''}</div>
         <div class="record-meta">${v.nombreNegocio || '—'} · RUT ${v.rutContacto} · ${v.telefono || 'sin teléfono'}</div>
         <div class="record-meta">${v.region ? v.region + (v.comuna ? ', ' + v.comuna : '') : ''} · ${v.cantPos} POS · Ejec: ${v.ejecutivo || '—'}</div>
+        ${v.giroDesc ? '<div class="record-meta">Giro: '+v.codSII+' — '+v.giroDesc+'</div>' : ''}
         <div class="record-pills">
           ${v.propina ? '<span class="pill">Propina</span>' : ''}
           ${v.conTecnico ? '<span class="pill">Con técnico</span>' : ''}
           ${v.sinTecnico ? '<span class="pill">Sin técnico</span>' : ''}
           ${v.entregaInm ? '<span class="pill">Entrega inmediata</span>' : ''}
           ${v.boletaElect ? '<span class="pill">Boleta electrónica</span>' : ''}
+          <span class="pill pill-checklist">Checklist ${hechosChk}/${totalChk}</span>
+          ${v.validado ? '<span class="pill pill-validado">✓ Validado por '+v.validadoPor+'</span>' : ''}
         </div>
+        ${esAdmin ? '<button class="btn-validar '+(v.validado?'is-validado':'')+'" onclick="toggleValidacion('+v.id+')">'+(v.validado?'✓ Validado — quitar':'Validar venta')+'</button>' : ''}
       </div>
       <div>
         <div class="record-date">${v.fecha}</div>
@@ -517,7 +1060,8 @@ function renderRecords() {
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 // ─── TOAST ────────────────────────────────────────────────
@@ -527,7 +1071,7 @@ function showToast(msg, type) {
   t.className = 'toast ' + type;
   t.style.display = 'block';
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+  window._toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3500);
 }
 </script>
 </body>
